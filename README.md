@@ -23,6 +23,8 @@ conda install bioconda::spades
 conda install bioconda::bandage
 conda install bioconda::shovill
 sudo apt install rename
+wget https://raw.githubusercontent.com/KorfLab/Assemblathon/refs/heads/master/assemblathon_stats.pl
+wget https://raw.githubusercontent.com/ucdavis-bioinformatics/assemblathon2-analysis/refs/heads/master/FAlite.pm
 
 # reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly)
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
@@ -115,11 +117,13 @@ done]
 a. (genomics) irfan@User:~/quality$ mkdir -p fastp_fastqc_htmls fastp_fastqc_zips
 b.(genomics) irfan@User:~/quality$ mv *.fastp_fastqc.html fastp_fastqc_htmls/
 c.(genomics) irfan@User:~/quality$ mv *.fastp_fastqc.zip fastp_fastqc_zips/
+
 # Assembly
 [Note: 
 1.Assembly can be done by shovill and/or spades. Spades are integrated into shovill , in spades graph files are generated. 
 2.Shovill Supports other assemblers like SKESA, Velvet, and Megahit.]
-1.Shovill:
+1.Assembly execution:
+a.Shovill:
 A. For single file: shovill [options] --outdir DIR (Directory name) --R1 R1.fq.gz --R2 R2.fq.gz 
 B. For multiple file: 
 (i) nano shovill.sh
@@ -141,7 +145,7 @@ done}
 (ii) chmod +x shovill.sh
 (iii) ./shovill.sh
 
-2.Spades
+b.Spades
 A. For sigle file:
 (i) Default: spades.py -o output_directory --phred-offset 33 --careful -1 strain1_R1.fastp.fastq.gz -2 strain1_R2.fastp.fastq.gz -k 21,33,55,77,99 
 (ii) In case of limited resources: spades.py -o output_directory --phred-offset 33 -1 strain1_R1.fastp.fastq.gz -2 strain1_R2.fastp.fastq.gz -k 21,33,55 -t 4 -m 10 --only-assembler
@@ -190,6 +194,112 @@ done
 echo "All SPAdes runs are done."}
 (ii) chmod +x run_spades_all.sh
 (iii) ./run_spades_all.sh
+
+2.Assebly stat check 
+I.Aseembly statistics check execution:
+a.For single file: 
+(i) perl -I /home/irfan ~/assemblathon_stats.pl ~/assembly/selected/shovill_ERR10359916/contigs.fa (for shovill)
+(iI) perl -I /home/irfan ~/assemblathon_stats.pl ~/assembly/selected/spades_outputs/ERR10359916/contigs.fasta (for spades)
+
+b.For multiple file:
+A. for shovill: 
+(i) nano stat.sh
+{for dir in ~/assembly/selected/shovill_ERR*/; do
+    contig="$dir/contigs.fa"
+    if [ -f "$contig" ]; then
+        echo "Processing $contig"
+        perl -I /home/irfan ~/assemblathon_stats.pl "$contig" > "${dir%/}/assemblathon_stats.txt"
+    else
+        echo "No contigs.fa found in $dir"
+    fi
+done}
+(ii) chmod +x stat.sh
+(iii) ./stat.sh
+
+B. for spades:
+(i) nano run_assemblathon_stats.sh
+{#!/bin/bash
+
+# Paths
+PERL_SCRIPT=~/assemblathon_stats.pl
+MODULE_PATH=/home/irfan
+INPUT_BASE=~/assembly/selected/spades_outputs
+
+# Loop over each ERR* directory
+for dir in "$INPUT_BASE"/ERR*/; do
+    contig_file="${dir}/contigs.fasta"
+    output_file="${dir}/assemblathon_stats.txt"
+    
+    if [ -f "$contig_file" ]; then
+        echo "Processing $contig_file"
+        perl -I "$MODULE_PATH" "$PERL_SCRIPT" "$contig_file" > "$output_file"
+    else
+        echo "contigs.fasta not found in $dir"
+    fi
+done}
+(ii) chmod +x run_assemblathon_stats.sh
+(iii) ./run_assemblathon_stats.sh
+
+II.If combine all output in a single tsv or excel file (optional):
+A. for shovill:
+(i) nano combine.sh
+{output_file=~/assembly/selected/all_assemblathon_stats.tsv
+> "$output_file"  # empty the file first
+
+for dir in ~/assembly/selected/shovill_ERR*/; do
+    contig="$dir/contigs.fa"
+    sample=$(basename "$dir")
+    if [ -f "$contig" ]; then
+        echo ">>> $sample" >> "$output_file"
+        perl -I /home/irfan ~/assemblathon_stats.pl "$contig" >> "$output_file"
+        echo -e "\n" >> "$output_file"
+    fi
+done}
+(ii) chmod +x combine.sh
+(iii) ./combine.sh
+B. for spades:
+(i) nano combine_assemblathon_stats.sh
+{#!/bin/bash
+
+# Output file path (summary of all)
+output_file=~/assembly/selected/spades_outputs/all_assemblathon_stats.tsv
+
+# Empty the output file first
+> "$output_file"
+
+# Loop over each ERR* directory
+for dir in ~/assembly/selected/spades_outputs/ERR*/; do
+    contig="${dir}/contigs.fasta"
+    sample=$(basename "$dir")
+
+    if [ -f "$contig" ]; then
+        echo "Processing $sample..."
+        echo ">>> $sample" >> "$output_file"
+        perl -I /home/irfan ~/assemblathon_stats.pl "$contig" >> "$output_file"
+        echo -e "\n" >> "$output_file"
+    else
+        echo "⚠️  No contigs.fasta in $sample"
+    fi
+done
+
+echo "✅ All stats written to: $output_file"}
+(ii) chmod +x combine_assemblathon_stats.sh
+(iii) ./combine_assemblathon_stats.sh
+
+III. Visualization of statistics:
+(i) cat assemblathon_stats.txt (for single view)
+(ii) less assemblathon_stats.txt (for scrollable view)
+(iii) nl assemblathon_stats.txt | less (with line numbers)
+
+IV.Visualization of graph files originated from spades:
+(i) (spades) irfan@User:~/assembly/selected/spades_outputs/ERR10359916$ Bandage image assembly_graph.fastg graph_output.png --height 1000 (graph to png conversion)
+(ii) (spades) irfan@User:~/assembly/selected/spades_outputs/ERR10359916$ explorer.exe graph_output.png (Visualization for Windows)
+
+
+
+
+
+
 
 
 
