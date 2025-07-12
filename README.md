@@ -21,6 +21,8 @@ conda install bioconda::fastqc
 conda install bioconda::fastp
 conda install bioconda::spades
 conda install bioconda::bandage
+conda install bioconda::shovill
+sudo apt install rename
 
 # reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly)
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
@@ -113,6 +115,85 @@ done]
 a. (genomics) irfan@User:~/quality$ mkdir -p fastp_fastqc_htmls fastp_fastqc_zips
 b.(genomics) irfan@User:~/quality$ mv *.fastp_fastqc.html fastp_fastqc_htmls/
 c.(genomics) irfan@User:~/quality$ mv *.fastp_fastqc.zip fastp_fastqc_zips/
+# Assembly
+[Note: 
+1.Assembly can be done by shovill and/or spades. Spades are integrated into shovill , in spades graph files are generated. 
+2.Shovill Supports other assemblers like SKESA, Velvet, and Megahit.]
+1.Shovill:
+A. For single file: shovill [options] --outdir DIR (Directory name) --R1 R1.fq.gz --R2 R2.fq.gz 
+B. For multiple file: 
+(i) nano shovill.sh
+{#!/bin/bash
+
+# Loop through all *_R1.fastp.fastq.gz files in the current directory
+for r1 in *_R1.fastp.fastq.gz
+do
+    # Derive corresponding R2 file and sample name
+    sample=$(basename "$r1" _R1.fastp.fastq.gz)
+    r2="${sample}_R2.fastp.fastq.gz"
+    outdir="shovill_${sample}"
+
+    echo "Running Shovill for sample: $sample"
+
+    # Run Shovill with fixed genome size to avoid KMC memory error
+    shovill --R1 "$r1" --R2 "$r2" --outdir "$outdir" --ram 3 --cpus 4 --gsize 5m [--ram 3 --cpus 4 --gsize 5m: needs when your pc is ram/processor sensitive]
+done}
+(ii) chmod +x shovill.sh
+(iii) ./shovill.sh
+
+2.Spades
+A. For sigle file:
+(i) Default: spades.py -o output_directory --phred-offset 33 --careful -1 strain1_R1.fastp.fastq.gz -2 strain1_R2.fastp.fastq.gz -k 21,33,55,77,99 
+(ii) In case of limited resources: spades.py -o output_directory --phred-offset 33 -1 strain1_R1.fastp.fastq.gz -2 strain1_R2.fastp.fastq.gz -k 21,33,55 -t 4 -m 10 --only-assembler
+B. For multiple files:
+(i) nano run_spades_all.sh
+{#!/bin/bash
+
+# Parameters for SPAdes
+KMER="21,33,55" [add "99" if you have high resource]
+THREADS=4
+MEMORY=10
+PHRED=33
+
+# Output base directory
+OUTPUT_BASE="spades_outputs"
+mkdir -p "$OUTPUT_BASE"
+
+# Loop through each R1 file
+for R1 in *_R1.fastp.fastq.gz; do
+    # Extract sample name
+    SAMPLE=$(basename "$R1" _R1.fastp.fastq.gz)
+    
+    # Match the corresponding R2 file
+    R2="${SAMPLE}_R2.fastp.fastq.gz"
+
+    # Check if R2 file exists
+    if [[ ! -f "$R2" ]]; then
+        echo "Missing R2 file for sample $SAMPLE. Skipping..."
+        continue
+    fi
+
+    # Output directory for this sample
+    OUTDIR="${OUTPUT_BASE}/${SAMPLE}"
+    mkdir -p "$OUTDIR"
+
+    echo "Running SPAdes for sample: $SAMPLE"
+    
+    # Run SPAdes
+    spades.py -o "$OUTDIR" \
+        --phred-offset $PHRED \
+        -1 "$R1" -2 "$R2" \
+        -k $KMER -t $THREADS -m $MEMORY \
+        --only-assembler [no need when you have high resources]
+done
+
+echo "All SPAdes runs are done."}
+(ii) chmod +x run_spades_all.sh
+(iii) ./run_spades_all.sh
+
+
+
+
 
 
 
