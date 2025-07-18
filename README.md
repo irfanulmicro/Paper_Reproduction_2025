@@ -295,6 +295,53 @@ IV.Visualization of graph files originated from spades:
 (i) (spades) irfan@User:~/assembly/selected/spades_outputs/ERR10359916$ Bandage image assembly_graph.fastg graph_output.png --height 1000 (graph to png conversion)
 (ii) (spades) irfan@User:~/assembly/selected/spades_outputs/ERR10359916$ explorer.exe graph_output.png (Visualization for Windows)
 
+# Quality assessment of assembly
+1.Copying all directory (stored in spades output directory into new directory-quast)
+(i) (base) irfan@User:~/assembly/selected/spades_outputs$ mkdir quast
+(ii) (base) irfan@User:~/assembly/selected/spades_outputs$ ls
+ERR10359916  ERR10359918  ERR10359921  ERR10359938  ERR10359946  ERR10359954  quast
+(iii) (base) irfan@User:~/assembly/selected/spades_outputs$ cp -r ERR*/ quast/
+[note: if i want to copy specific directory from spades output to quast then the command will be:
+(base) irfan@User:~/assembly/selected/spades_outputs$ cp -r ERR10359916 ERR10359918 quast/]
+(iv) (base) irfan@User:~/assembly/selected/spades_outputs$ cd quast
+(v) (base) irfan@User:~/assembly/selected/spades_outputs/quast$ ls
+ERR10359916  ERR10359918  ERR10359921  ERR10359938  ERR10359946  ERR10359954
+
+2.Download a reference FASTA sequence and after download delete the metadata file (zone identifier)
+(i) rm 'reference_fasta.fasta:Zone.Identifier'
+3.Quast Exectuion:
+[Note:
+(a) Basic command: ./quast.py test_data/contigs_1.fasta \
+           test_data/contigs_2.fasta \
+        -r test_data/reference.fasta.gz \
+        -g test_data/genes.txt \
+        -1 test_data/reads1.fastq.gz -2 test_data/reads2.fastq.gz \
+        -o quast_test_output
+        
+ (b) Additional parameter: 
+ (I) -g <genes.txt>: If you have a gene annotation file in GFF or BED format. This helps QUAST assess gene completeness.
+(II) -1 <reads_1.fastq> and -2 <reads_2.fastq>: If you have paired-end read files and want QUAST to align them to the assemblies for more in-depth evaluation (e.g., coverage analysis, misassemblies).
+so, using -g and -1 can be used as follows:
+quast.py ERR10359916/contigs.fasta \
+         ERR10359918/contigs.fasta \
+         -r reference_fasta.fasta \
+         -g genes.gff \
+         -1 reads_1.fastq.gz -2 reads_2.fastq.gz \
+         -o quast_output
+  (c) Confusion: 
+  (i) quast.py ...	When quast.py is installed and in your PATH (like in your conda env) — most common case.
+(ii) ./quast.py ...	When you are in the folder that contains the quast.py script file itself.]
+
+(i) quast.py ERR*/contigs.fasta \
+         -r reference_fasta.fasta \
+         -o quast_output = Here ERR is the folder/directory and each directory contain contigs.fasta
+
+
+(ii) (quast) irfan@User:~/assembly/selected/spades_outputs/quast/quast_output$ ls
+aligned_stats    genome_stats    quast.log    report.tex  transposed_report.tex
+basic_stats      icarus.html     report.html  report.tsv  transposed_report.tsv
+contigs_reports  icarus_viewers  report.pdf   report.txt  transposed_report.txt
+[see report.pdf file]
 
 
 
