@@ -22,6 +22,7 @@ conda install bioconda::fastp
 conda install bioconda::spades
 conda install bioconda::bandage
 conda install bioconda::shovill
+conda install -c bioconda quast -y
 sudo apt install rename
 wget https://raw.githubusercontent.com/KorfLab/Assemblathon/refs/heads/master/assemblathon_stats.pl
 wget https://raw.githubusercontent.com/ucdavis-bioinformatics/assemblathon2-analysis/refs/heads/master/FAlite.pm
