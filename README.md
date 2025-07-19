@@ -23,6 +23,7 @@ conda install bioconda::spades
 conda install bioconda::bandage
 conda install bioconda::shovill
 conda install -c bioconda quast -y
+conda install -c conda-forge -c bioconda bakta
 sudo apt install rename
 wget https://raw.githubusercontent.com/KorfLab/Assemblathon/refs/heads/master/assemblathon_stats.pl
 wget https://raw.githubusercontent.com/ucdavis-bioinformatics/assemblathon2-analysis/refs/heads/master/FAlite.pm
@@ -346,19 +347,32 @@ contigs_reports  icarus_viewers  report.pdf   report.txt  transposed_report.txt
 [see report.pdf file]
 
 # Annotation:
-1.By using beav:
+1. Database download: 
+(A) By using bakta:
 (i) script for database download to be saved in particular directory:
-(a) (beav) irfan@User:~$ nano ~/bin/beav-db
+(a) (beav) irfan@User:~$ nano ~/bin/bakta-db
 [#!/bin/bash
-bakta_db download --output /home/irfan --type full]
-(b) (beav) irfan@User:~$ chmod +x ~/bin/beav-db
+bakta_db download --output /home/irfan --type full/light]
+(b) (beav) irfan@User:~$ chmod +x ~/bin/bakta-db
 (c) (beav) irfan@User:~$ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
-(d) (beav) irfan@User:~$  beav-db
+(d) (beav) irfan@User:~$  bakta-db
 [Note: 
-beav-db is a script where path is defined by command c. That's why it is executable from any folder/directory and the command is "beav-db" in stead of "./beav-db"
+bakta-db is a script where path is defined by command ("echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc") . That's why it is executable from any folder/directory and the command is "beav-db" in stead of "./beav-db"]
+                                      or
+(ii) By tar file download and then extraction:
+(a) wget https://zenodo.org/record/14916843/files/db-light.tar.xz
+(b) bakta_db install -i db-light.tar.xz
+(c) mkdir -p ~/bakta_db_light
+(d) tar -xf db-light.tar.xz -C ~/bakta_db_light]
+                                    or
+(iii) Direct download (More applicable for full database):  bakta_db download --output /home/irfan --type full
+[Note:
+(a) sometimes it not works then follow above (i) or (ii)}
+(b) after --output the path (/home/irfan) is the path where database is saved. 
 
-(ii)  Donwloading the database:
+(B).By using beav:
 
 
 
