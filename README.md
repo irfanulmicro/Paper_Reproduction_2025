@@ -309,7 +309,8 @@ ERR10359916  ERR10359918  ERR10359921  ERR10359938  ERR10359946  ERR10359954  qu
 ERR10359916  ERR10359918  ERR10359921  ERR10359938  ERR10359946  ERR10359954
 
 2.Download a reference FASTA sequence and after download delete the metadata file (zone identifier)
-(i) rm 'reference_fasta.fasta:Zone.Identifier'
+(i) NCBI-Nucleotide-organism name-FASTA or NCBI-Nucleotide-organism name-WGS-link click-FASTA
+(ii) rm 'reference_fasta.fasta:Zone.Identifier'
 3.Quast Exectuion:
 [Note:
 (a) Basic command: ./quast.py test_data/contigs_1.fasta \
@@ -343,6 +344,21 @@ aligned_stats    genome_stats    quast.log    report.tex  transposed_report.tex
 basic_stats      icarus.html     report.html  report.tsv  transposed_report.tsv
 contigs_reports  icarus_viewers  report.pdf   report.txt  transposed_report.txt
 [see report.pdf file]
+
+# Annotation:
+1.By using beav:
+(i) script for database download to be saved in particular directory:
+(a) (beav) irfan@User:~$ nano ~/bin/beav-db
+[#!/bin/bash
+bakta_db download --output /home/irfan --type full]
+(b) (beav) irfan@User:~$ chmod +x ~/bin/beav-db
+(c) (beav) irfan@User:~$ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+(d) (beav) irfan@User:~$  beav-db
+[Note: 
+beav-db is a script where path is defined by command c. That's why it is executable from any folder/directory and the command is "beav-db" in stead of "./beav-db"
+
+(ii)  Donwloading the database:
 
 
 
