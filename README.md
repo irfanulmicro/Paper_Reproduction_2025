@@ -411,6 +411,10 @@ done]
 (ii) For Beav:
 beav --input /home/irfan/assembly/selected/spades_outputs --threads 8 --tiger_blast_database home/irfan/blast/refseq_genomic.fna
 
+3.Visualization:
+(i) Bakta provided the follwoing file- bakta_plot contigs.json
+(ii) Circos plot should be visualized in the follwoing server-  https://bakta.computational.bio/viewer
+
 
 
 
