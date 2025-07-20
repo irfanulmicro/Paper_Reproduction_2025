@@ -16,14 +16,18 @@ rm wget-log* (wget log file removal)
 find . -name "*:Zone.Identifier" -delete (Zone Identifier file removal)
 
 # Installation of the tools
-conda install bioconda::bbmap
-conda install bioconda::fastqc
-conda install bioconda::fastp
-conda install bioconda::spades
-conda install bioconda::bandage
-conda install bioconda::shovill
-conda install -c bioconda quast -y
-conda install -c conda-forge -c bioconda bakta
+[1.mamba is faster than conda
+2.If you want to use mamba first install anaconda or miniconda and then mamba into it as follows-
+conda install mamba -n base -c conda-forge]
+conda or mamba install bioconda::bbmap
+conda or mamba install bioconda::fastqc
+conda or mamba install bioconda::fastp
+conda or mamba install bioconda::spades
+conda or mamba install bioconda::bandage
+conda or mamba install bioconda::shovill
+conda or mamba install -c bioconda quast -y
+conda or mamba install -c conda-forge -c bioconda bakta
+mamba create -n beav(environment name) beav(tool)
 sudo apt install rename
 wget https://raw.githubusercontent.com/KorfLab/Assemblathon/refs/heads/master/assemblathon_stats.pl
 wget https://raw.githubusercontent.com/ucdavis-bioinformatics/assemblathon2-analysis/refs/heads/master/FAlite.pm
@@ -373,6 +377,40 @@ source ~/.bashrc") . That's why it is executable from any folder/directory and t
 (b) after --output the path (/home/irfan) is the path where database is saved. 
 
 (B).By using beav:
+(i) beav_db
+
+2.Execution of Annotation:
+(i) For Bakta: 
+(a) If i want to single organism's annotation separately: 
+bakta --db /home/irfan/bakta_db_light/db-light \
+      --output ~/assembly/selected/spades_outputs/ERR10359916/bakta_out \
+      --prefix ERR10359916 \
+      ~/assembly/selected/spades_outputs/ERR10359916/contigs.fasta
+(b) If i want to multiple organism's annotation simultaneously:
+(I) nano run_bakta_all.sh
+[#!/bin/bash
+
+BAKTA_DB="/home/irfan/bakta_db_light/db-light"
+BASE_DIR=~/assembly/selected/spades_outputs
+
+for sample_dir in $BASE_DIR/ERR*/; do
+    sample=$(basename "$sample_dir")
+    contig_file="$sample_dir/contigs.fasta"
+    out_dir="$sample_dir/bakta_out"
+
+    if [[ -f "$contig_file" ]]; then
+        echo "Running Bakta on $sample..."
+        bakta --db $BAKTA_DB --output $out_dir --prefix $sample $contig_file
+    else
+        echo "No contigs.fasta found in $sample_dir, skipping."
+    fi
+done]
+(II) chmod +x run_bakta_all.sh
+(III) ./run_bakta_all.sh
+
+(ii) For Beav:
+beav --input /home/irfan/assembly/selected/spades_outputs --threads 8 --tiger_blast_database home/irfan/blast/refseq_genomic.fna
+
 
 
 
