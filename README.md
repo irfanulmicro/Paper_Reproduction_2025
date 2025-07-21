@@ -415,6 +415,17 @@ beav --input /home/irfan/assembly/selected/spades_outputs --threads 8 --tiger_bl
 (i) Bakta provided the follwoing file- bakta_plot contigs.json
 (ii) Circos plot should be visualized in the follwoing server-  https://bakta.computational.bio/viewer
 
+# Alignment
+1.Rename of contigs.fasta of each directory: 
+(i) (phylogeny) irfan@User:~/assembly/selected/spades_outputs$ ls
+ERR10359916  ERR10359918  ERR10359921  ERR10359938  ERR10359946  ERR10359954 [Here every ERRXXXXX is a directory and each directory contain contigs.fasta file]
+(ii) (phylogeny) irfan@User:~/assembly/selected/spades_outputs$ mkdir -p all_contigs
+(iii) (phylogeny) irfan@User:~/assembly/selected/spades_outputs$ for dir in ERR*/; do
+    cp "$dir/contigs.fasta" "all_contigs/${dir%/}_contigs.fasta"
+done
+
+
+
 
 
 
