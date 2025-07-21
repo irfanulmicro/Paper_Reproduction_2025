@@ -31,6 +31,7 @@ mamba create -n beav(environment name) beav(tool)
 sudo apt install rename
 wget https://raw.githubusercontent.com/KorfLab/Assemblathon/refs/heads/master/assemblathon_stats.pl
 wget https://raw.githubusercontent.com/ucdavis-bioinformatics/assemblathon2-analysis/refs/heads/master/FAlite.pm
+python3 -m pip install -U automlsa2
 
 # reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly)
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
