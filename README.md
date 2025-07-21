@@ -32,6 +32,15 @@ sudo apt install rename
 wget https://raw.githubusercontent.com/KorfLab/Assemblathon/refs/heads/master/assemblathon_stats.pl
 wget https://raw.githubusercontent.com/ucdavis-bioinformatics/assemblathon2-analysis/refs/heads/master/FAlite.pm
 python3 -m pip install -U automlsa2
+sudo apt install curl -y [curl for edirect installation, entrez-direct for query file preparation]
+[entrez-direct installation code:
+cd ~
+curl -O https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz
+tar -xzf edirect.tar.gz
+echo 'export PATH=$HOME/edirect:$PATH' >> ~/.bashrc
+source ~/.bashrc]
+
+
 
 # reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly)
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
@@ -425,20 +434,46 @@ ERR10359916  ERR10359918  ERR10359921  ERR10359938  ERR10359946  ERR10359954 [He
     cp "$dir/contigs.fasta" "all_contigs/${dir%/}_contigs.fasta"
 done
 2.Preparation of query file: The reference genome/protein sequence with which we will align our genome
-(i) NCBI-Genome/Protein database- "gene name" and "organism name" in search box
+[Note: in query file if two fasta have same sequence one should be excluded and replaced with new one]
+(i) Manually:
+(a) NCBI-Genome/Protein database- "gene name" and "organism name" in search box
+(b) Go to FASTA-Copy amino acid sequence-paste into single file in Notepad (wsl supported ubuntu) 
+                                          or 
+                      I.nano Salmonella.sh
+                      II.paste all the sequencce with header (e.g- >bp xxx)
+(ii) Command line:
+(a) nano download_mlsa_salmonella.sh
+[#!/bin/bash
+
+# Define genes and organism
+genes=("recA" "dnaA" "gyrB" "atpD" "rpoB" "16S rRNA")
+organism="Salmonella enterica"
+limit=20  # number of sequences per gene
+
+# Output directory
+mkdir -p mlsa_fasta
+cd mlsa_fasta
+
+# Download each gene
+for gene in "${genes[@]}"; do
+  echo "Downloading $gene for $organism..."
+  outfile="${gene// /_}_Salmonella_complete.fasta"
+  
+  esearch -db protein -query "\"$gene\"[Gene] AND \"$organism\"[Organism] AND complete genome[Title]" | \
+    efetch -format fasta | \
+    awk '/^>/ {n++} n<='$limit' {print}' > "$outfile"
+
+  echo "Saved: $outfile"
+done
+
+# Concatenate all into one file
+cat *_Salmonella_complete.fasta > all_MLSA_Salmonella.fasta
+
+echo "✅ All done. Combined FASTA: all_MLSA_Salmonella.fasta"]
+
+3.(phylogeny) irfan@User:~/assembly/selected/spades_outputs$  automlsa2 --query ref_faa --dir /home/irfan/assembly/selected/spades_outputs/all_contigs -t 8 --allow_missing 4 --missing_check salmonella_paper 
+
+Output:  salmonella_paper.nex.iqtree
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Creating AutoMLSA Phylogeny
+# phylogenetic tree
