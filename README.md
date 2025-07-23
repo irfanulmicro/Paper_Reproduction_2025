@@ -425,7 +425,7 @@ beav --input /home/irfan/assembly/selected/spades_outputs --threads 8 --tiger_bl
 (i) Bakta provided the follwoing file- bakta_plot contigs.json
 (ii) Circos plot should be visualized in the follwoing server-  https://bakta.computational.bio/viewer
 
-# Alignment 
+# Alignment (preferring Automlsa2 web server because it automatically select outgroup)
 1.Rename of contigs.fasta of each directory and copy to particular directory for alignment: 
 (i) (phylogeny) irfan@User:~/assembly/selected/spades_outputs$ ls
 ERR10359916  ERR10359918  ERR10359921  ERR10359938  ERR10359946  ERR10359954 [Here every ERRXXXXX is a directory and each directory contain contigs.fasta file]
@@ -439,14 +439,14 @@ done
 (a) NCBI-Genome/Protein database- "gene name" and "organism name" in search box
 (b) Go to FASTA-Copy amino acid sequence-paste into single file in Notepad (wsl supported ubuntu) 
                                           or 
-                      I.nano Salmonella.sh
-                      II.paste all the sequencce with header (e.g- >bp xxx)
+                      I.nano ref_faa.sh or nano ref_faa.txt
+                      II.paste all the sequencce with header (e.g- >bp xxx) and save
 (ii) Command line:
 (a) nano download_mlsa_salmonella.sh
 [#!/bin/bash
 
 # Define genes and organism
-genes=("recA" "dnaA" "gyrB" "atpD" "rpoB" "16S rRNA")
+genes=("recA" "dnaA" "gyrB"  "16S rRNA")
 organism="Salmonella enterica"
 limit=20  # number of sequences per gene
 
@@ -471,9 +471,22 @@ cat *_Salmonella_complete.fasta > all_MLSA_Salmonella.fasta
 
 echo "✅ All done. Combined FASTA: all_MLSA_Salmonella.fasta"]
 
-3.(phylogeny) irfan@User:~/assembly/selected/spades_outputs$  automlsa2 --query ref_faa --dir /home/irfan/assembly/selected/spades_outputs/all_contigs -t 8 --allow_missing 4 --missing_check salmonella_paper 
+3.Alignment and tree file generation :
+(i) without Outgroup:(phylogeny) irfan@User:~/assembly/selected/spades_outputs$  automlsa2 --query ref_faa --dir /home/irfan/assembly/selected/spades_outputs/all_contigs -t 8 --allow_missing 4 --missing_check salmonella_paper 
+Output:  salmonella_paper.nex.iqtree/  salmonella_paper.nex.treefile
+(ii) With Outgroup:
+(a) Outgroup bacteria selection: BVBRC-similar genome browser-In search box write your organism name-pick up a bacterial genus that is close to my organism and have genes of query file
+(b) Environment preparation:
+(I) keep outgroup sequence in that folder where assembled contigs.fasta are located. In this case 6 testing assembled seqeunce and 1 outgroup sequence were kept in all_contigs.folder
+(II) keep ref_faa.txt(query files) another folder (in case of mine it was spades_output)
+(c) Command execution:   (phylogeny) irfan@User:~/assembly/selected/spades_outputs$ automlsa2   --query ref_faa.txt   --dir all_contigs   --files all_contigs/ERRiiiiiiiiiiiii_contigs.fasta   --outgroup ERRiiiiiiiiiiiii_contigs   --allow_missing 7   --missing_check   -t 8   test_salmonella_with_ERRiiiiiiiiiiiii_outgroup2 
+[I.If you work with single file then --files (flag) will be used
+II. If you work with multiple file then --dir will be used (directory where assembled files are saved)
 
-Output:  salmonella_paper.nex.iqtree
+                                                                  Or 
+(phylogeny) irfan@User:~/assembly/selected/spades_outputs$ automlsa2   --query ref_faa.txt   --dir all_contigs  --outgroup ERRiiiiiiiiiiiii_contigs   --allow_missing 7   --missing_check   -t 8   test_salmonella_with_ERRiiiiiiiiiiiii_outgroup3
+Output: tree file/iqtree file
 
 
-# phylogenetic tree
+
+# phylogenetic tree 
