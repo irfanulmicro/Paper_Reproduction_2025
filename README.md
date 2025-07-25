@@ -39,8 +39,7 @@ curl -O https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz
 tar -xzf edirect.tar.gz
 echo 'export PATH=$HOME/edirect:$PATH' >> ~/.bashrc
 source ~/.bashrc]
-
-
+pip install aniclustermap
 
 # reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly)
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
@@ -425,7 +424,7 @@ beav --input /home/irfan/assembly/selected/spades_outputs --threads 8 --tiger_bl
 (i) Bakta provided the follwoing file- bakta_plot contigs.json
 (ii) Circos plot should be visualized in the follwoing server-  https://bakta.computational.bio/viewer
 
-# Alignment (preferring Automlsa2 web server because it automatically select outgroup)
+# Alignment and phylogenetic tree construction (preferring Automlsa2 web server because it automatically select outgroup)
 1.Rename of contigs.fasta of each directory and copy to particular directory for alignment: 
 (i) (phylogeny) irfan@User:~/assembly/selected/spades_outputs$ ls
 ERR10359916  ERR10359918  ERR10359921  ERR10359938  ERR10359946  ERR10359954 [Here every ERRXXXXX is a directory and each directory contain contigs.fasta file]
@@ -487,6 +486,9 @@ II. If you work with multiple file then --dir will be used (directory where asse
 (phylogeny) irfan@User:~/assembly/selected/spades_outputs$ automlsa2   --query ref_faa.txt   --dir all_contigs  --outgroup ERRiiiiiiiiiiiii_contigs   --allow_missing 7   --missing_check   -t 8   test_salmonella_with_ERRiiiiiiiiiiiii_outgroup3
 Output: tree file/iqtree file
 
+# phylogenetic tree visualization (in R)
+
+# ANI clustermap
+(phylogeny) irfan@User:~$ ANIclustermap -i  all_contigs -o ANI2
 
 
-# phylogenetic tree 
