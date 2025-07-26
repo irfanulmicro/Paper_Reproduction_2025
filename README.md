@@ -491,4 +491,11 @@ Output: tree file/iqtree file
 # ANI clustermap
 (phylogeny) irfan@User:~$ ANIclustermap -i  all_contigs -o ANI2
 
+# Orthologue clustering
+1.Environment preparation:
+(i)make a directory named "proteome" (any name)
+(ii)From bakta annotation, all related faa files copy and paste proteome file
+2.Execution: 
+(i)(orthofinder) irfan@User:~/assembly/selected/spades_outputs$ orthofinder -f proteome/
+
 
