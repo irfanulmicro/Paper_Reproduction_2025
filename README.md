@@ -40,6 +40,7 @@ tar -xzf edirect.tar.gz
 echo 'export PATH=$HOME/edirect:$PATH' >> ~/.bashrc
 source ~/.bashrc]
 pip install aniclustermap
+conda install orthofinder -c bioconda
 
 # reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly)
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
@@ -494,7 +495,7 @@ Output: tree file/iqtree file
 # Orthologue clustering
 1.Environment preparation:
 (i)make a directory named "proteome" (any name)
-(ii)From bakta annotation, all related faa files copy and paste proteome file
+(ii)From bakta annotation, all related faa files copy and paste into proteome directory
 2.Execution: 
 (i)(orthofinder) irfan@User:~/assembly/selected/spades_outputs$ orthofinder -f proteome/
 
