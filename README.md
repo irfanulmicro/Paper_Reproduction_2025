@@ -46,6 +46,7 @@ conda install pirate
 
 # optional dependencies for plotting figures in R
 conda install r==3.5.1 r-ggplot2==3.1.0 r-dplyr==0.7.6 bioconductor-ggtree==1.14.4 r-phangorn==2.4.0 r-gridextra
+mamba install -c conda-forge -c bioconda -c defaults 'panaroo>=1.3'
 
 # reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly)
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
@@ -505,7 +506,8 @@ Output: tree file/iqtree file
 (i)(orthofinder) irfan@User:~/assembly/selected/spades_outputs$ orthofinder -f proteome/
 
 # Pan-genome analysis
-1.Pan-genome analysis execution:
+1.via Pirate (not preferred)
+(A) Pan-genome analysis execution:
 (i)Collection of gff3 files from annotation: 
 (ii)stadardization of gff3 files into gff files via (agat) 
 bash script: save it before the gff3 containing folder
@@ -533,7 +535,13 @@ here- input = directory name where _final.gff3 files were located]
  output: Speficially prefer on- 
  (a) PIRATE.log    
  (b) PIRATE.gene_families.ordered.tsv 
-2.Pan-genome visualization
+(B).Pan-genome visualization :via R
+2.via Panaroo (preferred)
+(A) collect gff3 files of annotation from prokka (better) or bakta
+(B) run Panaroo: panaroo -i *.gff -o results --clean-mode strict --remove-invalid-genes
+[output: final_graph.gml]
+(C) Visualization: https://cytoscape.org/
+
 
 
 
