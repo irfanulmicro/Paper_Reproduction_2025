@@ -41,6 +41,11 @@ echo 'export PATH=$HOME/edirect:$PATH' >> ~/.bashrc
 source ~/.bashrc]
 pip install aniclustermap
 conda install orthofinder -c bioconda
+conda install pirate 
+[dependencies: conda install r==3.5.1 r-ggplot2==3.1.0 r-dplyr==0.7.6 bioconductor-ggtree==1.14.4 r-phangorn==2.4.0 r-gridextra]
+
+# optional dependencies for plotting figures in R
+conda install r==3.5.1 r-ggplot2==3.1.0 r-dplyr==0.7.6 bioconductor-ggtree==1.14.4 r-phangorn==2.4.0 r-gridextra
 
 # reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly)
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
@@ -498,5 +503,37 @@ Output: tree file/iqtree file
 (ii)From bakta annotation, all related faa files copy and paste into proteome directory
 2.Execution: 
 (i)(orthofinder) irfan@User:~/assembly/selected/spades_outputs$ orthofinder -f proteome/
+
+# Pan-genome analysis
+1.Pan-genome analysis execution:
+(i)Collection of gff3 files from annotation: 
+(ii)stadardization of gff3 files into gff files via (agat) 
+bash script: save it before the gff3 containing folder
+(a)nano pangenome.sh
+[#!/bin/bash
+for infile in `ls -1 new/*.gff3`; do
+        strain=`echo -e "$infile" | sed 's/^.*\///g;s/.gff3//g'`
+        echo -e "$strain"
+        agat_convert_sp_gxf2gxf.pl -g $infile -o ${strain}.gff --gff_version_output 3
+        echo -e "##FASTA" >> ${strain}.gff
+done
+here-
+new= directory name where all gff3 files are located
+note: improve the first and second line if you have files extension (_final_gff3) in stead of (_gff3):-
+for infile in `ls -1 input/*final.gff3`; do
+       strain=`echo -e "$infile" | sed 's/^.*\///g;s/.gff3//g' | sed 's/_final//g' `
+here- input = directory name where _final.gff3 files were located]
+(b)chmod +x pangenome.sh
+(c)./pangenome.sh
+(iii)mkdir input_fixed log
+(iv) mv *gff input_fixed
+ (v) mv *agat.log log
+ (vi) PIRATE -i input_fixed/ -o output/ -t 16
+ here, input_fixed = is the directory where standardized gff files are located
+ output: Speficially prefer on- 
+ (a) PIRATE.log    
+ (b) PIRATE.gene_families.ordered.tsv 
+2.Pan-genome visualization
+
 
 
