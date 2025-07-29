@@ -506,37 +506,50 @@ Output: tree file/iqtree file
 (i)(orthofinder) irfan@User:~/assembly/selected/spades_outputs$ orthofinder -f proteome/
 
 # Pan-genome analysis
-1.via Pirate (not preferred)
+1.via Pirate (preferred for proper visualization, statitstics and presence-absence determination)
 (A) Pan-genome analysis execution:
-(i)Collection of gff3 files from annotation: 
+(i)Collection of gff3 files (should be qualityfull) and fna files from annotation:
+agat_input_gff= gff files containing directory
+agat_input_fna= fna files containing directory
 (ii)stadardization of gff3 files into gff files via (agat) 
-bash script: save it before the gff3 containing folder
+(note:bash script: save it before the gff3 containing folder)
 (a)nano pangenome.sh
 [#!/bin/bash
-for infile in `ls -1 new/*.gff3`; do
-        strain=`echo -e "$infile" | sed 's/^.*\///g;s/.gff3//g'`
-        echo -e "$strain"
-        agat_convert_sp_gxf2gxf.pl -g $infile -o ${strain}.gff --gff_version_output 3
-        echo -e "##FASTA" >> ${strain}.gff
-done
-here-
-new= directory name where all gff3 files are located
-note: improve the first and second line if you have files extension (_final_gff3) in stead of (_gff3):-
-for infile in `ls -1 input/*final.gff3`; do
-       strain=`echo -e "$infile" | sed 's/^.*\///g;s/.gff3//g' | sed 's/_final//g' `
-here- input = directory name where _final.gff3 files were located]
+# Paths to input folders
+gff_dir="agat_input_gff"
+fna_dir="agat_input_fna"
+
+# Output folder (optional)
+mkdir -p agat_output
+
+# Loop over all .gff files in the gff input directory
+for infile in ${gff_dir}/*.gff; do
+    # Extract strain name by removing path and extension
+    strain=$(basename "$infile" .gff)
+    
+    echo "Processing: $strain"
+
+    # Convert to GFF3 using AGAT
+    agat_convert_sp_gxf2gxf.pl -g "$infile" -o "agat_output/${strain}.gff" --gff_version_output 3
+
+    # Append the FASTA content
+    echo "##FASTA" >> "agat_output/${strain}.gff"
+    cat "${fna_dir}/${strain}.fna" >> "agat_output/${strain}.gff"
+done]
+[note: if your multiple sequence have multiple format like .fna, .fa, .fasta then you should modify the last line as follows:-
+cat "${fna_dir}/${strain}.f*" >> "agat_output/${strain}.gff"]
+
 (b)chmod +x pangenome.sh
 (c)./pangenome.sh
-(iii)mkdir input_fixed log
-(iv) mv *gff input_fixed
- (v) mv *agat.log log
- (vi) PIRATE -i input_fixed/ -o output/ -t 16
- here, input_fixed = is the directory where standardized gff files are located
+(iii) mkdir log
+(iv) mv *agat.log log
+ (v) (orthologue) irfan@User:~/exp$ PIRATE -i  agat_output/ -o output/ -t 16
+ here, agat_output = is the directory where standardized gff files are located
  output: Speficially prefer on- 
  (a) PIRATE.log    
  (b) PIRATE.gene_families.ordered.tsv 
 (B).Pan-genome visualization :via R
-2.via Panaroo (preferred)
+2.via Panaroo (preferred for only pangenome statistics)
 (A) collect gff3 files of annotation from prokka (better) or bakta
 (B) run Panaroo: panaroo -i *.gff -o results --clean-mode strict --remove-invalid-genes
 [output: final_graph.gml]
