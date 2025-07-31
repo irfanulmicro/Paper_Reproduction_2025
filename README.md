@@ -882,6 +882,52 @@ p4
 [output: final_graph.gml]
 (C) Visualization: https://cytoscape.org/
 
+# 16.gene presence-absence determination
+# 17.snp calling
+1.Select a good reference (in FASTA format) which have good quality (hybrid assembly, N50, L50). I choose the following organism-
+>CP196174.1 Salmonella enterica strain W126 chromosome, complete genome
+2.keep your both fastq (R1 and R2 files) in same folder. such as: 
+(snippy) irfan@User:~/snp/Salmonella_snp$ ls
+ERR10359916_1.fastq.gz  ERR10359918_2.fastq.gz  ERR10359938_1.fastq.gz  ERR10359946_2.fastq.gz
+ERR10359916_2.fastq.gz  ERR10359921_1.fastq.gz  ERR10359938_2.fastq.gz  ERR10359954_1.fastq.gz
+ERR10359918_1.fastq.gz  ERR10359921_2.fastq.gz  ERR10359946_1.fastq.gz  ERR10359954_2.fastq.gz
+3.(snippy) irfan@User:~/snp$ nano run_snippy_all.sh
+[#!/bin/bash
+
+# Paths
+REF="Salmonella_enterica_ref.fasta"
+READDIR="Salmonella_snp"
+OUTDIR="mysnps_results"
+
+
+# Make output dir
+mkdir -p $OUTDIR
+
+# List of sample prefixes (assuming _1.fastq.gz and _2.fastq.gz)
+for r1 in ${READDIR}/*_1.fastq.gz; do
+    sample=$(basename $r1 _1.fastq.gz)
+    r2="${READDIR}/${sample}_2.fastq.gz"
+
+    # Skip if pair not found
+    [ -f "$r2" ] || { echo "Missing $r2"; continue; }
+
+    # Run snippy
+    snippy --cpus 4 \
+        --outdir ${OUTDIR}/${sample} \
+        --ref $REF \
+        --R1 $r1 \
+        --R2 $r2 \
+        --force
+done
+note: here cpus 4/8 depends on the processor/ram of pc]
+4.(snippy) irfan@User:~/snp$ chmod +x run_snippy_all.sh
+5.(snippy) irfan@User:~/snp$ ./run_snippy_all.sh
+output:
+
+# PCA analysis using snp
+# Fst analysis using snp
+
+
 
 
 
