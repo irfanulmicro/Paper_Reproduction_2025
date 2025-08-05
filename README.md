@@ -47,6 +47,8 @@ conda install pirate
 # optional dependencies for plotting figures in R
 conda install r==3.5.1 r-ggplot2==3.1.0 r-dplyr==0.7.6 bioconductor-ggtree==1.14.4 r-phangorn==2.4.0 r-gridextra
 mamba install -c conda-forge -c bioconda -c defaults 'panaroo>=1.3'
+pip install scoary-2
+pip install scoary
 
 # 4.reformating / resampling raw sequence data (sample from my raw fastq samples, to elevate the next operation smoothly) [optional]
 1.(genomics) irfan@User:~/raw_seq$ nano batch_sample.sh
@@ -922,7 +924,13 @@ done
 note: here cpus 4/8 depends on the processor/ram of pc]
 4.(snippy) irfan@User:~/snp$ chmod +x run_snippy_all.sh
 5.(snippy) irfan@User:~/snp$ ./run_snippy_all.sh
+6.(snippy) irfan@User:~/snp$ snippy-core --ref Salmonella_enterica_ref.fasta --prefix core mysnps_results/*
+7.(phylogeny) irfan@User:~/snp$ fasttree -nt core.full.aln > core.full.tree (optional, if you to construct phylogenetic tree by snp)
+
 output:
+1.vcf file
+2.core.aln file
+3.tree file (visualization by itol web server)
 
 # PCA analysis using snp
 # Fst analysis using snp
