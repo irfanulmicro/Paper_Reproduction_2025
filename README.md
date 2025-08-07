@@ -596,6 +596,10 @@ p1 <- gheatmap(p1, meta.year, width= 7, offset=0.81) +
 (ii)From bakta annotation, all related faa files copy and paste into proteome directory
 2.Execution: 
 (i)(orthofinder) irfan@User:~/assembly/selected/spades_outputs$ orthofinder -f proteome/
+output: 
+(i) (orthofinder) irfan@User:~/assembly/selected/spades_outputs/proteome/OrthoFinder/Results_Jul26/Phylogenetic_Hierarchical_Orthogroups$ls
+(ii) under the directory you will get- No.tsv, N1.tsv, N2.tsv, N3.tsv, N4.tsv and traits.txt
+(iii) No.tsv file is more important
 
 # 15.Pan-genome analysis
 1.via Pirate (preferred for proper visualization, statitstics and presence-absence determination)
@@ -885,6 +889,64 @@ p4
 (C) Visualization: https://cytoscape.org/
 
 # 16.gene presence-absence determination
+1.Option1/no trait file:
+I.Preparation: collect the No.tsv file from orthofinder2 output
+II.Execution:  scoary2 \
+    --genes N0.tsv \
+    --gene-data-type 'gene-list:\t' \
+    --n-permut 300 \
+    --n-cpus 7 \
+    --outdir out
+*Here, -n-permut and --n-cpus are customizable on basis of your pc's ram+memory consideration
+
+2.Option2/trait file (gaussian/continuous data):
+I. Preparation:
+(i)  collect the No.tsv file from orthofinder2 output
+(ii) manually create a trait_numeric.tsv file (strain name should match with column name of N0.tsv file)
+*No.tsv file (column name) and trait_numeric.tsv file (strain name) should match otherwise can match with python script
+II.Execution:
+(i) (scoary-2) irfan@User:~/assembly/selected/spades_outputs/proteome/OrthoFinder/Results_Jul26/Phylogenetic_Hierarchical_Orthogroups$ scoary2 \
+    --genes N0.tsv \
+    --gene-data-type 'gene-list:\t' \
+    --traits traits_numeric.tsv \
+    --trait-data-type 'gaussian:\t' \
+    --n-permut 100 \
+    --n-cpus 4 \
+    --outdir out
+III. output:
+(i) (scoary-2) irfan@User:~/assembly/selected/spades_outputs/proteome/OrthoFinder/Results_Jul26/Phylogenetic_Hierarchical_Orthogroups/out$ ls
+     app  binarized_traits.tsv  logs  traits  tree.nwk
+*Here-
+(A) binarized_traits.tsv (file)-
+(a) Shows how Scoary2 converted your numeric traits into binary 0/1 values
+(b) Based on its Gaussian model and threshold (cutoff=0.85)
+(c) You can inspect this to see which samples were considered “high” or “low” for each trait
+(B) tree.nwk (file)-
+(a) Newick-formatted phylogenetic tree built from your gene presence/absence matrix
+(b) You can open this in a tree viewer like:
+-iTOL
+-FigTree
+-Dendroscope
+(C) traits/ (directory/folder)
+(a) Contains per-trait analysis files, including intermediate results
+_(b) If any traits had passed filtering, Scoary would generate:
+-*.sig.tsv = significant genes
+=*.pairs.tsv = gene-gene pairs for co-association
+(c) 
+-Under triats directory there will be subdirectories (subdirectory number = number of traits used in traits_numeric.tsv file. In my case i used two traits: Resistant Score and Growth rate) e.g-
+irfan@User:~/assembly/selected/spades_outputs/proteome/OrthoFinder/Results_Jul26/Phylogenetic_Hierarchical_Orthogroups/out/traits/ResistanceScore$ ls
+result.tsv
+-in each subdirectory there contains results.tsv file and the file contains as follows-
+contingency_table	The 2x2 contingency table in format (g+t+, g+t-, g-t+, g-t-), counts of gene presence/trait presence combinations
+fisher_p	Fisher’s exact test p-value assessing association between gene presence and trait
+odds_ratio	Odds ratio measuring strength of association; inf means a perfect association
+Gene	The gene or orthogroup ID being tested
+g+t+	Number of strains with gene present AND trait present
+g+t-	Number of strains with gene present AND trait absent
+g-t+	Number of strains with gene absent AND trait present
+g-t-	Number of strains with gene absent AND trait absent
+* Unlike binary traits where Scoary gives multiple test corrections like Bonferroni and FDR by default, for continuous traits Scoary does not always output corrected p-values automatically.
+
 # 17.snp calling
 1.Select a good reference (in FASTA format) which have good quality (hybrid assembly, N50, L50). I choose the following organism-
 >CP196174.1 Salmonella enterica strain W126 chromosome, complete genome
@@ -991,6 +1053,7 @@ obj.hf = genind2hierfstat(obj)
 # Various estimation of Fst
 genet.dist(obj.hf, method='Nei87', diploid=F)
 genet.dist(obj.hf, method='Dch', diploid=F)
+
 
 
 
