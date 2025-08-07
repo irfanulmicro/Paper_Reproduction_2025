@@ -971,7 +971,26 @@ pca.dataset$spp = as.factor(meta[match(snp$ind.names, meta$Strain),]$Species)
 ggplot(pca.dataset, aes(PC1, PC2, fill=spp)) + geom_point(shape=21, size=3, alpha=0.7)
 ggplot(pca.dataset, aes(PC1, PC3, fill=spp)) + geom_point(shape=21, size=3, alpha=0.7)
 # Fst analysis using snp
+# install.packages("hierfstat")
+library("hierfstat")
+library("adegenet")
 
+# Lets load the fasta file by extract only the SNPs
+seq.snp = fasta2DNAbin('core.full.aln', snpOnly=T)
+obj = DNAbin2genind(seq.snp)
+
+# Load the meta file that contains population structure 
+meta <- read.table('meta.csv', sep=',', header = T)
+
+# Add the structure I want to test in the GenInd object
+obj$pop = as.factor(meta[match(rownames(obj$tab), meta$Strain),]$SamplingSite)
+
+# Convert genind object into hierfstat object
+obj.hf = genind2hierfstat(obj)
+
+# Various estimation of Fst
+genet.dist(obj.hf, method='Nei87', diploid=F)
+genet.dist(obj.hf, method='Dch', diploid=F)
 
 
 
