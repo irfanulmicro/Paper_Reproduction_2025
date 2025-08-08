@@ -888,6 +888,8 @@ p4
 [output: final_graph.gml]
 (C) Visualization: https://cytoscape.org/
 
+3.Web server: https://nmdc.cn/ipga/
+
 # 16.gene presence-absence determination
 1.Option1/no trait file:
 I.Preparation: collect the No.tsv file from orthofinder2 output
