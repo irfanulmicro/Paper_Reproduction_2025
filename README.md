@@ -904,11 +904,15 @@ II.Execution:  scoary2 \
 2.Option2/trait file (gaussian/continuous data):
 I. Preparation:
 (i)  collect the No.tsv file from orthofinder2 output
-(ii) manually create a trait_numeric.tsv file (strain name should match with column name of N0.tsv file)
+(ii) copy the No.tsv file and make it organized, cleaned and rename it No_cleaned.tsv
+(a) copy and rename
+(b) open with text editor or microsoft excel
+(c) organize the file
+(iii) manually create a trait_numeric.tsv file (strain name should match with column name of N0.tsv file)
 *No.tsv file (column name) and trait_numeric.tsv file (strain name) should match otherwise can match with python script
 II.Execution:
 (i) (scoary-2) irfan@User:~/assembly/selected/spades_outputs/proteome/OrthoFinder/Results_Jul26/Phylogenetic_Hierarchical_Orthogroups$ scoary2 \
-    --genes N0.tsv \
+    --genes N0_cleaned.tsv \
     --gene-data-type 'gene-list:\t' \
     --traits traits_numeric.tsv \
     --trait-data-type 'gaussian:\t' \
