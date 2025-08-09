@@ -586,6 +586,9 @@ p1 <- gheatmap(p, meta.sus, width = 9, offset = 0.51) +
 p1 <- gheatmap(p1, meta.year, width= 7, offset=0.81) + 
   scale_fill_viridis(option="D", name="Year")
 (c) p1 + geom_tiplab2(aes(label=Country), color="gray40", offset=0.06, size=3)
+
+* Saving png file via code: ggsave("salmonella_circular_tree.png", final_plot, width = 10, height = 10, dpi = 300)
+  
   
 # 13.ANI clustermap
 (phylogeny) irfan@User:~$ ANIclustermap -i  all_contigs -o ANI2
@@ -901,7 +904,7 @@ II.Execution:  scoary2 \
     --outdir out
 *Here, -n-permut and --n-cpus are customizable on basis of your pc's ram+memory consideration
 
-2.Option2/trait file (gaussian/continuous data):
+2.Option2: trait file (gaussian/quantitative data):
 I. Preparation:
 (i)  collect the No.tsv file from orthofinder2 output
 (ii) copy the No.tsv file and make it organized, cleaned and rename it No_cleaned.tsv
@@ -909,7 +912,8 @@ I. Preparation:
 (b) open with text editor or microsoft excel
 (c) organize the file
 (iii) manually create a trait_numeric.tsv file (strain name should match with column name of N0.tsv file)
-*No.tsv file (column name) and trait_numeric.tsv file (strain name) should match otherwise can match with python script
+*No.tsv file (column name) and trait_numeric.tsv file (strain name) should match otherwise can match with python script.
+**No.tsv file contain gene families and traits_numeric/binary.tsv file are phenotypic file. so both file should have link such as: gene families:tetA and phenotypic: tetracycline resistance
 II.Execution:
 (i) (scoary-2) irfan@User:~/assembly/selected/spades_outputs/proteome/OrthoFinder/Results_Jul26/Phylogenetic_Hierarchical_Orthogroups$ scoary2 \
     --genes N0_cleaned.tsv \
@@ -953,6 +957,19 @@ g-t+	Number of strains with gene absent AND trait present
 g-t-	Number of strains with gene absent AND trait absent
 * Unlike binary traits where Scoary gives multiple test corrections like Bonferroni and FDR by default, for continuous traits Scoary does not always output corrected p-values automatically.
 
+2.Option3:trait file (binary/qualitative data):
+I. Environment preparation: as like as option 2
+II.Execution:
+scoary2 \
+    --genes N0_cleaned.tsv \
+    --gene-data-type 'gene-list:\t' \
+    --traits traits_binary.tsv \
+    --trait-data-type 'binary:\t' \
+    --n-permut 100 \
+    --n-cpus 4 \
+    --outdir out_binary
+III.output:
+(i) results.tsv file
 # 17.snp calling
 1.Select a good reference (in FASTA format) which have good quality (hybrid assembly, N50, L50). I choose the following organism-
 >CP196174.1 Salmonella enterica strain W126 chromosome, complete genome
