@@ -588,8 +588,7 @@ p1 <- gheatmap(p1, meta.year, width= 7, offset=0.81) +
 (c) p1 + geom_tiplab2(aes(label=Country), color="gray40", offset=0.06, size=3)
 
 * Saving png file via code: ggsave("salmonella_circular_tree.png", final_plot, width = 10, height = 10, dpi = 300)
-  
-  
+ 
 # 13.ANI clustermap
 (phylogeny) irfan@User:~$ ANIclustermap -i  all_contigs -o ANI2
 
